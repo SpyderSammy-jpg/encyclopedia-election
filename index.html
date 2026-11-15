@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7th Grade Encyclopedia | Ownership Election</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --red: #ed2525;
+  --orange: #ff672e;
+  --black: #090909;
+  --panel: #151515;
+  --white: #f7f7f7;
+  --muted: #a5a5a5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--black);
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 15% 10%, #8b111133, transparent 45%),
+    radial-gradient(ellipse at 90% 80%, #e94b171c, transparent 40%);
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid #ff9b70;
+  outline-offset: 3px;
+}
+header {
+  padding: 55px 20px 35px;
+  text-align: center;
+}
+.eyebrow {
+  color: #ff7657;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+h1 {
+  font-size: clamp(32px, 6vw, 58px);
+  margin: 15px auto;
+  max-width: 850px;
+  line-height: 1.08;
+  font-weight: 900;
+  background: linear-gradient(100deg, #fff 20%, #ff7770 65%, #ff9a43);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+header p {
+  color: #c9c9c9;
+  font-size: 17px;
+  line-height: 1.6;
+}
+main {
+  max-width: 1050px;
+  margin: auto;
+  padding: 0 20px 70px;
+}
+.section { margin-top: 38px; }
+.section-title {
+  font-size: 25px;
+  margin-bottom: 18px;
+  border-left: 5px solid var(--red);
+  padding-left: 13px;
+}
+.speech-grid, .candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.card {
+  background: linear-gradient(145deg, #1b1b1b, #101010);
+  border: 1px solid #343434;
+  border-radius: 17px;
+  padding: 25px;
+  box-shadow: 0 12px 35px #0005;
+}
+.card h3 { margin: 0 0 9px; font-size: 22px; }
+.card p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.btn {
+  border: 0;
+  border-radius: 11px;
+  padding: 14px 20px;
+  font-weight: 800;
+  transition: transform .18s, filter .18s;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.13); }
+.btn:disabled { opacity: .55; cursor: wait; transform: none; }
+.speech-btn {
+  background: #292929;
+  color: white;
+  border: 1px solid #555;
+  width: 100%;
+}
+.vote-btn {
+  width: 100%;
+  min-height: 125px;
+  font-size: clamp(23px, 4vw, 34px);
+  color: white;
+  border: 1px solid #ffffff30;
+  box-shadow: 0 10px 30px #0006;
+}
+.sharvesh {
+  background: linear-gradient(125deg, #a90e18, #f04425 60%, #ff7738);
+}
+.tanuj {
+  background: linear-gradient(125deg, #242424, #454545);
+}
+.vote-note {
+  color: #aaa;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 17px;
+}
+.privacy-note {
+  background: #211717;
+  border: 1px solid #633333;
+  padding: 14px 17px;
+  border-radius: 12px;
+  color: #e8caca;
+  line-height: 1.5;
+  font-size: 13px;
+  margin-top: 20px;
+}
+.results-button {
+  background: #242424;
+  color: white;
+  border: 1px solid #555;
+  width: 100%;
+  margin-top: 18px;
+}
+.status {
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin-top: 20px;
+}
+footer {
+  text-align: center;
+  padding: 25px;
+  border-top: 1px solid #292929;
+  color: #777;
+  font-size: 12px;
+}
+
+/* Full-screen overlays */
+.overlay {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: #080808f7;
+  overflow-y: auto;
+  padding: 25px 16px;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+}
+.overlay.active { display: flex; }
+.modal {
+  width: min(680px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: linear-gradient(150deg, #202020, #101010);
+  border: 1px solid #484848;
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 25px 90px #000c;
+}
+.modal.wide { width: min(850px, 100%); }
+.close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  font-size: 23px;
+}
+.modal h2 {
+  font-size: 30px;
+  margin: 4px 45px 20px 0;
+}
+.speech-text {
+  white-space: pre-line;
+  color: #ddd;
+  line-height: 1.8;
+  font-size: 15px;
+}
+.form-label {
+  display: block;
+  color: #ddd;
+  margin: 18px 0 8px;
+  font-weight: bold;
+}
+.field {
+  width: 100%;
+  background: #090909;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 15px;
+}
+.field::placeholder { color: #777; }
+.confirm-candidate {
+  color: #ff7765;
+  font-size: 19px;
+  font-weight: 900;
+  margin: 15px 0;
+}
+.primary-action {
+  width: 100%;
+  margin-top: 22px;
+  background: linear-gradient(110deg, #b81720, #f04c28, #ff7938);
+  color: white;
+  padding: 16px;
+  font-size: 17px;
+}
+.secondary-action {
+  width: 100%;
+  margin-top: 10px;
+  color: white;
+  background: #333;
+}
+.message {
+  display: none;
+  padding: 13px;
+  border-radius: 9px;
+  margin-top: 14px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.message.error { display: block; background: #451818; color: #ffc2c2; }
+.message.info { display: block; background: #18321f; color: #b9f4c7; }
+.success-icon {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #174d2b;
+  color: #7df49b;
+  font-size: 42px;
+  margin-bottom: 22px;
+}
+.success-subtitle { color: #bbb; line-height: 1.7; }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin: 20px 0;
+}
+.stat {
+  background: #242424;
+  border: 1px solid #393939;
+  padding: 18px;
+  border-radius: 13px;
+}
+.stat strong { display: block; font-size: 32px; margin-top: 8px; }
+.stat span { color: #aaa; font-size: 13px; }
+.result-candidate { margin: 22px 0; }
+.result-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: bold;
+  margin-bottom: 9px;
+}
+.track {
+  height: 17px;
+  border-radius: 30px;
+  background: #303030;
+  overflow: hidden;
+}
+.bar {
+  height: 100%;
+  width: 0;
+  border-radius: 30px;
+  transition: width .8s ease;
+}
+.bar.red { background: linear-gradient(90deg, #b81720, #ff753d); }
+.bar.gray { background: linear-gradient(90deg, #555, #aaa); }
+.voter-list {
+  background: #151515;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 12px;
+}
+.voter-list h3 { font-size: 16px; margin: 0 0 10px; }
+.voter-list p { color: #bbb; margin: 0; line-height: 1.7; overflow-wrap: anywhere; }
+.winner {
+  border: 1px solid #773d26;
+  background: #29180f;
+  color: #ffbd8b;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-top: 20px;
+  line-height: 1.6;
+}
+.small-muted { color: #888; font-size: 12px; line-height: 1.6; }
+.loading { color: #aaa; text-align: center; padding: 20px; }
+@media (max-width: 650px) {
+  .speech-grid, .candidate-grid { grid-template-columns: 1fr; }
+  header { padding-top: 38px; }
+  .modal { padding: 25px 20px; }
+  .modal h2 { font-size: 25px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="eyebrow">The election is here</div>
+  <h1>7th Grade Encyclopedia Ownership Voting</h1>
+  <p>Please vote for who you want to be Owner of the Encyclopedia.</p>
+</header>
+
+<main>
+  <section class="section">
+    <h2 class="section-title">Speeches</h2>
+    <div class="speech-grid">
+      <article class="card">
+        <h3>Sharvesh</h3>
+        <p>Current Owner</p>
+        <button class="btn speech-btn" onclick="openSpeech('sharvesh')">
+          Read Sharvesh's Speech
+        </button>
+      </article>
+      <article class="card">
+        <h3>Tanuj</h3>
+        <p>Candidate for Owner</p>
+        <button class="btn speech-btn" onclick="openSpeech('tanuj')">
+          Read Tanuj's Speech
+        </button>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Vote</h2>
+    <div class="candidate-grid">
+      <button class="btn vote-btn sharvesh" onclick="chooseCandidate('Sharvesh')">
+        VOTE FOR SHARVESH
+      </button>
+      <button class="btn vote-btn tanuj" onclick="chooseCandidate('Tanuj')">
+        VOTE FOR TANUJ
+      </button>
+    </div>
+    <p class="vote-note">You can only vote once, so choose wisely.</p>
+    <div class="privacy-note">
+      <strong>Voting transparency:</strong> Voters' names and their selected
+      candidates will appear publicly on the election results page. Your private
+      voting code will not be displayed.
+    </div>
+    <button class="btn results-button" onclick="openResults()">
+      VIEW ELECTION RESULTS
+    </button>
+    <div class="status" id="connectionStatus">Connecting to election database...</div>
+  </section>
+</main>
+
+<footer>7th Grade Encyclopedia • Ownership Election</footer>
+
+<!-- Speech overlay -->
+<div class="overlay" id="speechOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="close" onclick="closeOverlay('speechOverlay')" aria-label="Close">×</button>
+    <h2 id="speechTitle">Candidate Speech</h2>
+    <div class="speech-text" id="speechContent"></div>
+  </div>
+</div>
+
+<!-- Confirmation overlay -->
+<div class="overlay" id="confirmOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="close" onclick="closeOverlay('confirmOverlay')" aria-label="Close">×</button>
+    <h2>Confirm Your Vote</h2>
+    <p>Are you sure you want to submit your vote?</p>
+    <div class="confirm-candidate" id="chosenCandidate"></div>
+
+    <label class="form-label" for="voterName">Enter your eligible voter name</label>
+    <input class="field" id="voterName" type="text" maxlength="60"
+      autocomplete="name" placeholder="Your name">
+
+    <label class="form-label" for="voterCode">Enter your private voting code</label>
+    <input class="field" id="voterCode" type="password" maxlength="40"
+      autocomplete="off" placeholder="Your single-use code">
+
+    <p class="small-muted">
+      Your code is private. Never share it with another voter.
+      Your name and candidate choice will be public after submission.
+    </p>
+    <div class="message" id="voteMessage" role="status"></div>
+    <button class="btn primary-action" id="submitVote" onclick="submitVote()">
+      CONFIRM MY VOTE
+    </button>
+    <button class="btn secondary-action" onclick="closeOverlay('confirmOverlay')">
+      GO BACK
+    </button>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="overlay" id="successOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="close" onclick="finishSuccess()" aria-label="Close">×</button>
+    <div class="success-icon">✓</div>
+    <h2>Your vote has been submitted!</h2>
+    <p class="success-subtitle">
+      Thank you for participating in the 7th Grade Encyclopedia ownership
+      election. Your vote has been securely recorded.
+    </p>
+    <button class="btn primary-action" onclick="finishSuccess()">
+      VIEW ELECTION RESULTS
+    </button>
+  </div>
+</div>
+
+<!-- Results overlay -->
+<div class="overlay" id="resultsOverlay" role="dialog" aria-modal="true">
+  <div class="modal wide">
+    <button class="close" onclick="closeOverlay('resultsOverlay')" aria-label="Close">×</button>
+    <h2>Election Results</h2>
+    <p class="small-muted">Live results, refreshed every two seconds.</p>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <span>Total votes submitted</span>
+        <strong id="totalVotes">0</strong>
+      </div>
+      <div class="stat">
+        <span>Eligible voters</span>
+        <strong>9</strong>
+      </div>
+    </div>
+
+    <div class="result-candidate">
+      <div class="result-heading">
+        <span>Sharvesh</span>
+        <span id="sharveshResult">0 votes · 0%</span>
+      </div>
+      <div class="track"><div class="bar red" id="sharveshBar"></div></div>
+    </div>
+
+    <div class="result-candidate">
+      <div class="result-heading">
+        <span>Tanuj</span>
+        <span id="tanujResult">0 votes · 0%</span>
+      </div>
+      <div class="track"><div class="bar gray" id="tanujBar"></div></div>
+    </div>
+
+    <div class="winner" id="winnerMessage">Waiting for the first vote...</div>
+
+    <div class="voter-list">
+      <h3>People who voted for Sharvesh</h3>
+      <p id="sharveshVoters">No votes yet.</p>
+    </div>
+    <div class="voter-list">
+      <h3>People who voted for Tanuj</h3>
+      <p id="tanujVoters">No votes yet.</p>
+    </div>
+    <p class="small-muted" id="lastUpdated">Waiting for election data...</p>
+  </div>
+</div>
+
+<script>
+/* ==========================================
+   SUPABASE CONNECTION
+   These are the public project URL and
+   publishable key, never a secret key.
+========================================== */
+
+const SUPABASE_URL = "https://mjhtyllbtdgxiamzjdhd.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_secret_Eap1ZLgwsJq4rGce7B4W7g_nJh-419T";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+let selectedCandidate = null;
+let resultsTimer = null;
+let isSubmitting = false;
+
+const speeches = {
+  sharvesh: {
+    title: "Sharvesh's Speech",
+    text: `Hello everyone! I am Sharvesh, and I am asking for your vote to continue being the Owner of the 7th Grade Encyclopedia.
+
+First, I want to address something important: the use of Artificial Intelligence. I support using AI as a tool to improve our encyclopedia. AI is not automatically harmful, and using it does not mean that someone is avoiding hard work. It can help us research, organize information, improve explanations, and save time. What matters most is how responsibly we use it and whether we verify the information it provides.
+
+I have put a tremendous amount of effort into building this encyclopedia. I am currently the Owner, and I have worked on creating a website, an application, and an enormous collection of educational notes. I have personally created 132 pages of notes without AI, and 154 pages if we include the work involving AI. If we also count the pages in our books, the total exceeds 300 pages!
+
+These accomplishments represent the time, dedication, and effort I have invested in this encyclopedia. I have worked to make our encyclopedia more organized, accessible, and useful for everyone. I understand that Tanuj has his own reasons for wanting ownership, and I respect his contributions to the original document.
+
+However, I believe that continuing with the current ownership structure will provide consistency and allow the encyclopedia to keep developing. I am not asking you to vote for me simply because I created the website or because I am the current Owner. I am asking you to consider my contributions, my plans for the future, and my commitment to improving this encyclopedia.
+
+I want to continue expanding our resources, improving our website, adding more educational content, and making this encyclopedia something our entire grade can be proud of. I believe that I have demonstrated the dedication and initiative needed to lead this encyclopedia. Your vote is your choice, and I respect whichever candidate you support.
+
+Thank you for taking the time to read my speech, and I hope I can count on your vote!
+
+- Sharvesh`
+  },
+  tanuj: {
+    title: "Tanuj's Speech",
+    text: `I requested my ownership of the docs because of the fact that Sharvesh has been using a lot of AI lately and saying that there wasn't enough time. I was owner of the original doc but when it was split into subjects, Sharvesh made them. I don't care about being owner of the website, I'm ok with editor but for the docs I would like my ownership back. Me and sharvesh have decided to vote for this. Please vote for me. THANK YOU - Tanuj`
+  }
+};
+
+function showOverlay(id) {
+  document.getElementById(id).classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove("active");
+  if (!document.querySelector(".overlay.active")) {
+    document.body.style.overflow = "";
+  }
+}
+function openSpeech(candidate) {
+  const speech = speeches[candidate];
+  document.getElementById("speechTitle").textContent = speech.title;
+  document.getElementById("speechContent").textContent = speech.text;
+  showOverlay("speechOverlay");
+}
+function chooseCandidate(candidate) {
+  selectedCandidate = candidate;
+  document.getElementById("chosenCandidate").textContent =
+    "Your selected candidate: " + candidate;
+  document.getElementById("voterName").value = "";
+  document.getElementById("voterCode").value = "";
+  setVoteMessage("", "");
+  showOverlay("confirmOverlay");
+}
+function setVoteMessage(message, type) {
+  const el = document.getElementById("voteMessage");
+  el.textContent = message;
+  el.className = "message" + (type ? " " + type : "");
+}
+function finishSuccess() {
+  closeOverlay("successOverlay");
+  openResults();
+}
+
+async function submitVote() {
+  if (isSubmitting) return;
+
+  const name = document.getElementById("voterName").value.trim();
+  const code = document.getElementById("voterCode").value.trim();
+
+  if (!name || !code) {
+    setVoteMessage("Please enter both your name and private voting code.", "error");
+    return;
+  }
+  if (!selectedCandidate) {
+    setVoteMessage("Please select a candidate first.", "error");
+    return;
+  }
+
+  isSubmitting = true;
+  const button = document.getElementById("submitVote");
+  button.disabled = true;
+  button.textContent = "SUBMITTING...";
+
+  try {
+    const { data, error } = await db.rpc("cast_vote", {
+      p_name: name,
+      p_candidate: selectedCandidate,
+      p_code: code
+    });
+
+    if (error) throw error;
+
+    if (!data || data.success !== true) {
+      setVoteMessage(data?.message || "Your vote could not be submitted.", "error");
+      return;
+    }
+
+    // This is only a convenience for this browser.
+    // The database is the actual one-vote enforcement.
+    localStorage.setItem("encyclopedia_election_voted", "true");
+
+    closeOverlay("confirmOverlay");
+    showOverlay("successOverlay");
+    await refreshResults();
+  } catch (error) {
+    console.error("Voting error:", error);
+    setVoteMessage(
+      "We couldn't submit your vote. Please check your connection and try again.",
+      "error"
+    );
+  } finally {
+    isSubmitting = false;
+    button.disabled = false;
+    button.textContent = "CONFIRM MY VOTE";
+  }
+}
+
+async function refreshResults() {
+  try {
+    const { data, error } = await db
+      .from("election_votes")
+      .select("voter_name,candidate,created_at")
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    const votes = data || [];
+    const sharveshVotes = votes.filter(v => v.candidate === "Sharvesh");
+    const tanujVotes = votes.filter(v => v.candidate === "Tanuj");
+    const total = votes.length;
+
+    const sCount = sharveshVotes.length;
+    const tCount = tanujVotes.length;
+    const sPercent = total ? Math.round((sCount / total) * 100) : 0;
+    const tPercent = total ? Math.round((tCount / total) * 100) : 0;
+
+    document.getElementById("totalVotes").textContent = total;
+    document.getElementById("sharveshResult").textContent =
+      `${sCount} votes · ${sPercent}%`;
+    document.getElementById("tanujResult").textContent =
+      `${tCount} votes · ${tPercent}%`;
+
+    document.getElementById("sharveshBar").style.width = sPercent + "%";
+    document.getElementById("tanujBar").style.width = tPercent + "%";
+
+    document.getElementById("sharveshVoters").textContent =
+      sCount ? sharveshVotes.map(v => v.voter_name).join(", ") : "No votes yet.";
+    document.getElementById("tanujVoters").textContent =
+      tCount ? tanujVotes.map(v => v.voter_name).join(", ") : "No votes yet.";
+
+    let winnerText = "Waiting for the first vote...";
+    if (total > 0 && sCount > tCount) {
+      winnerText = "Sharvesh is currently leading. Thank you for everyone who voted for me! -Sharvesh";
+    } else if (total > 0 && tCount > sCount) {
+      winnerText = "Tanuj is currently leading.";
+    } else if (total > 0 && sCount === tCount) {
+      winnerText = "The election is currently tied!";
+    }
+
+    document.getElementById("winnerMessage").textContent = winnerText;
+    document.getElementById("lastUpdated").textContent =
+      "Last updated: " + new Date().toLocaleTimeString();
+
+    document.getElementById("connectionStatus").textContent =
+      "Connected · " + total + " vote(s) recorded";
+  } catch (error) {
+    console.error("Results error:", error);
+    document.getElementById("connectionStatus").textContent =
+      "Could not load results. Check your database connection.";
+    document.getElementById("lastUpdated").textContent =
+      "Results could not be refreshed.";
+  }
+}
+
+function openResults() {
+  showOverlay("resultsOverlay");
+  refreshResults();
+  if (resultsTimer) clearInterval(resultsTimer);
+  resultsTimer = setInterval(refreshResults, 2000);
+}
+
+/* Load results on page startup and keep the status current. */
+refreshResults();
+setInterval(refreshResults, 2000);
+
+/* Stop the extra results timer when results are closed. */
+document.getElementById("resultsOverlay").addEventListener("transitionend", () => {});
+</script>
+</body>
+</html>
