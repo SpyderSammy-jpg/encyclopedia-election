@@ -5,7 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>7th Grade Encyclopedia Ownership Voting</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -19,9 +18,7 @@
       --white: #fff;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -33,13 +30,8 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    button, input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
 
     .container {
       width: min(100% - 32px, 1050px);
@@ -68,9 +60,7 @@
       font-weight: 900;
     }
 
-    h1 span {
-      color: var(--red);
-    }
+    h1 span { color: var(--red); }
 
     .subtitle {
       color: #d0d0d0;
@@ -96,9 +86,7 @@
       margin: 42px 0 20px;
     }
 
-    .section-title span {
-      color: var(--orange);
-    }
+    .section-title span { color: var(--orange); }
 
     .candidate-grid {
       display: grid;
@@ -174,7 +162,7 @@
       transform: none;
     }
 
-    .candidate-actions {
+    .candidate-actions, .bottom-actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -182,13 +170,7 @@
       margin-top: 22px;
     }
 
-    .bottom-actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 34px;
-    }
+    .bottom-actions { margin-top: 34px; }
 
     .small-note {
       color: #929292;
@@ -206,8 +188,6 @@
       color: #ffb18f;
     }
 
-    /* Overlays */
-
     .overlay {
       display: none;
       position: fixed;
@@ -220,9 +200,7 @@
       padding: 18px;
     }
 
-    .overlay.show {
-      display: flex;
-    }
+    .overlay.show { display: flex; }
 
     .modal {
       width: min(100%, 570px);
@@ -306,15 +284,8 @@
       font-size: 42px;
     }
 
-    .success-content {
-      text-align: center;
-    }
-
-    .success-content h2 {
-      margin-right: 0;
-    }
-
-    /* Results */
+    .success-content { text-align: center; }
+    .success-content h2 { margin-right: 0; }
 
     .results-panel {
       background: #111;
@@ -377,29 +348,76 @@
       padding: 20px;
     }
 
+    body.winner-mode {
+      overflow: hidden;
+      animation: screenShake .45s ease-in-out 3;
+    }
+
+    .winner-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle, #541017 0%, #18090b 55%, #050505 100%);
+      animation: winnerAppear .8s ease both;
+    }
+
+    .winner-screen h1 {
+      font-size: clamp(32px, 8vw, 76px);
+      color: var(--orange);
+      margin: 12px;
+    }
+
+    .winner-screen .winner-name {
+      font-size: clamp(42px, 10vw, 100px);
+      font-weight: 900;
+      color: white;
+      text-transform: uppercase;
+      text-shadow: 0 0 35px #ff681f99;
+    }
+
+    .winner-screen p {
+      color: #ddd;
+      font-size: 17px;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5001;
+    }
+
+    @keyframes winnerAppear {
+      from { opacity: 0; transform: scale(.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
     @media (max-width: 650px) {
-      .candidate-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .container {
-        padding-top: 28px;
-      }
-
-      .candidate {
-        padding: 23px;
-      }
-
-      .modal {
-        padding: 23px;
-      }
+      .candidate-grid { grid-template-columns: 1fr; }
+      .container { padding-top: 28px; }
+      .candidate { padding: 23px; }
+      .modal { padding: 23px; }
     }
   </style>
 </head>
 
 <body>
   <main class="container">
-
     <header>
       <div class="eyebrow">The official election</div>
       <h1>7th Grade <span>Encyclopedia</span><br>Ownership Voting</h1>
@@ -417,12 +435,10 @@
     <h2 class="section-title">Meet the <span>Candidates</span></h2>
 
     <section class="candidate-grid">
-
       <article class="candidate">
         <div class="candidate-mark">S</div>
         <h3>Sharvesh</h3>
         <p>Candidate for Encyclopedia Owner</p>
-
         <div class="candidate-actions">
           <button class="button button-dark" onclick="openSpeech('sharvesh')">
             Read Speech
@@ -437,7 +453,6 @@
         <div class="candidate-mark">T</div>
         <h3>Tanuj</h3>
         <p>Candidate for Encyclopedia Owner</p>
-
         <div class="candidate-actions">
           <button class="button button-dark" onclick="openSpeech('tanuj')">
             Read Speech
@@ -447,7 +462,6 @@
           </button>
         </div>
       </article>
-
     </section>
 
     <div class="bottom-actions">
@@ -457,49 +471,31 @@
     </div>
 
     <div id="pageStatus" class="status" aria-live="polite"></div>
-
-    <div class="small-note">
-      7th Grade Encyclopedia Ownership Election
-    </div>
-
+    <div class="small-note">7th Grade Encyclopedia Ownership Election</div>
   </main>
 
   <!-- SPEECH MODAL -->
-
   <div class="overlay" id="speechOverlay" role="dialog" aria-modal="true">
     <div class="modal">
       <button class="close" onclick="closeOverlay('speechOverlay')" aria-label="Close">×</button>
       <h2 id="speechTitle">Candidate Speech</h2>
       <div id="speechText"></div>
       <div class="modal-actions">
-        <button class="button button-dark" onclick="closeOverlay('speechOverlay')">
-          Close
-        </button>
+        <button class="button button-dark" onclick="closeOverlay('speechOverlay')">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- VOTE CONFIRMATION MODAL -->
-
+  <!-- VOTE MODAL -->
   <div class="overlay" id="voteOverlay" role="dialog" aria-modal="true">
     <div class="modal">
       <button class="close" onclick="closeOverlay('voteOverlay')" aria-label="Close">×</button>
-
       <h2>Cast Your Vote</h2>
-      <p>
-        You selected <strong id="selectedCandidateText"></strong>.
-        Enter your approved name below.
-      </p>
+      <p>You selected <strong id="selectedCandidateText"></strong>. Enter your approved name below.</p>
 
       <label class="field-label" for="voterName">Your name</label>
-      <input
-        class="text-input"
-        id="voterName"
-        type="text"
-        maxlength="60"
-        autocomplete="off"
-        placeholder="Enter your approved name"
-      >
+      <input class="text-input" id="voterName" type="text"
+        maxlength="60" autocomplete="off" placeholder="Enter your approved name">
 
       <p class="small-note" style="text-align:left">
         Please enter your own name. Each approved name can vote only once.
@@ -508,9 +504,7 @@
       <div id="voteError" class="status" aria-live="polite"></div>
 
       <div class="modal-actions">
-        <button class="button button-dark" onclick="closeOverlay('voteOverlay')">
-          Cancel
-        </button>
+        <button class="button button-dark" onclick="closeOverlay('voteOverlay')">Cancel</button>
         <button class="button button-red" id="submitVoteButton" onclick="submitVote()">
           Confirm Vote
         </button>
@@ -519,7 +513,6 @@
   </div>
 
   <!-- SUCCESS MODAL -->
-
   <div class="overlay" id="successOverlay" role="dialog" aria-modal="true">
     <div class="modal success-content">
       <div class="success-icon">✓</div>
@@ -534,35 +527,27 @@
   </div>
 
   <!-- RESULTS MODAL -->
-
   <div class="overlay" id="resultsOverlay" role="dialog" aria-modal="true">
     <div class="modal">
-      <button class="close" onclick="closeResults()" aria-label="Close">×</button>
-
+      <button class="close results-close" onclick="closeResults()" aria-label="Close">×</button>
       <h2>Live Election Results</h2>
-      <p>Results refresh automatically while this window is open.</p>
-
+      <p id="resultsDescription">Results refresh automatically while this window is open.</p>
       <div id="resultsContent">
         <div class="loading">Loading results...</div>
       </div>
-
-      <div class="modal-actions">
-        <button class="button button-dark" onclick="refreshResults()">
-          Refresh Now
-        </button>
-        <button class="button button-red" onclick="closeResults()">
-          Close
-        </button>
+      <div class="modal-actions results-actions">
+        <button class="button button-dark" onclick="refreshResults()">Refresh Now</button>
+        <button class="button button-red results-close-button" onclick="closeResults()">Close</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Supabase configuration
+    // SUPABASE CONFIGURATION
     const SUPABASE_URL = "https://mjhtyllbtdgxiamzjdhd.supabase.co";
 
-    // Replace this with your existing Supabase publishable key.
-    // Never put a Supabase secret key in this file.
+    // Paste your existing publishable key below.
+    // Never use a Supabase secret or service-role key in frontend code.
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_qyYWdo1pREm6UxhPM_e-nA_Yz5v2fvn";
 
     const db = window.supabase.createClient(
@@ -572,6 +557,11 @@
 
     let selectedCandidate = null;
     let resultsTimer = null;
+    let resultsLocked = false;
+    let winnerStarted = false;
+    let checkingElection = false;
+
+    const VOTED_COOKIE = "encyclopedia_voted";
 
     const speeches = {
       sharvesh: {
@@ -589,7 +579,6 @@
           "Thank you for considering my side and taking the time to vote."
         ]
       },
-
       tanuj: {
         title: "Tanuj's Speech",
         paragraphs: [
@@ -598,17 +587,28 @@
       }
     };
 
+    function hasVotedOnThisBrowser() {
+      return document.cookie.split("; ").some(
+        item => item.startsWith(VOTED_COOKIE + "=true")
+      );
+    }
+
+    function setVotedCookie() {
+      document.cookie =
+        VOTED_COOKIE + "=true; max-age=31536000; path=/; SameSite=Lax; Secure";
+    }
+
     function showOverlay(id) {
       document.getElementById(id).classList.add("show");
     }
 
     function closeOverlay(id) {
+      if (id === "resultsOverlay" && resultsLocked) return;
       document.getElementById(id).classList.remove("show");
     }
 
     function openSpeech(candidate) {
       const speech = speeches[candidate];
-
       document.getElementById("speechTitle").textContent = speech.title;
 
       const speechText = document.getElementById("speechText");
@@ -624,8 +624,13 @@
     }
 
     function chooseCandidate(candidate) {
-      selectedCandidate = candidate;
+      if (hasVotedOnThisBrowser()) {
+        lockResults();
+        openResults(true);
+        return;
+      }
 
+      selectedCandidate = candidate;
       document.getElementById("selectedCandidateText").textContent = candidate;
       document.getElementById("voterName").value = "";
       document.getElementById("voteError").textContent = "";
@@ -663,25 +668,21 @@
           }
         );
 
-        if (rpcError) {
-          throw rpcError;
-        }
+        if (rpcError) throw rpcError;
 
         if (!data || data.success !== true) {
-          error.textContent =
-            data?.message || "Your vote could not be submitted.";
+          error.textContent = data?.message || "Your vote could not be submitted.";
           return;
         }
 
+        setVotedCookie();
         closeOverlay("voteOverlay");
         showOverlay("successOverlay");
-
         document.getElementById("voterName").value = "";
 
       } catch (err) {
         console.error("Voting error:", err);
-        error.textContent =
-          "Something went wrong. Please try again later.";
+        error.textContent = "Something went wrong. Please try again later.";
       } finally {
         button.disabled = false;
         button.textContent = "Confirm Vote";
@@ -690,7 +691,17 @@
 
     function closeSuccessAndResults() {
       closeOverlay("successOverlay");
-      openResults();
+      lockResults();
+      openResults(true);
+    }
+
+    function lockResults() {
+      resultsLocked = true;
+      document.getElementById("resultsDescription").textContent =
+        "Your vote has been recorded. Live results are shown below.";
+
+      document.querySelectorAll(".results-close, .results-close-button")
+        .forEach(button => button.style.display = "none");
     }
 
     async function refreshResults() {
@@ -702,29 +713,17 @@
           .select("voter_name,candidate,created_at")
           .order("created_at", { ascending: true });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
         const votes = data || [];
         const sharveshVotes = votes.filter(v => v.candidate === "Sharvesh");
         const tanujVotes = votes.filter(v => v.candidate === "Tanuj");
-
         const total = votes.length;
+
         const sharveshPercent = total
-          ? Math.round((sharveshVotes.length / total) * 100)
-          : 0;
+          ? Math.round((sharveshVotes.length / total) * 100) : 0;
         const tanujPercent = total
-          ? Math.round((tanujVotes.length / total) * 100)
-          : 0;
-
-        let winnerMessage = "Voting is underway. The results are currently tied.";
-
-        if (sharveshVotes.length > tanujVotes.length) {
-          winnerMessage = "Thank you for everyone who voted for me! -Sharvesh";
-        } else if (tanujVotes.length > sharveshVotes.length) {
-          winnerMessage = "Tanuj is currently leading.";
-        }
+          ? Math.round((tanujVotes.length / total) * 100) : 0;
 
         resultsContent.replaceChildren();
 
@@ -733,24 +732,26 @@
         resultsContent.appendChild(summary);
 
         addCandidateResult(
-          resultsContent,
-          "Sharvesh",
-          sharveshVotes.length,
-          sharveshPercent,
-          sharveshVotes
+          resultsContent, "Sharvesh",
+          sharveshVotes.length, sharveshPercent, sharveshVotes
         );
 
         addCandidateResult(
-          resultsContent,
-          "Tanuj",
-          tanujVotes.length,
-          tanujPercent,
-          tanujVotes
+          resultsContent, "Tanuj",
+          tanujVotes.length, tanujPercent, tanujVotes
         );
 
         const message = document.createElement("div");
         message.className = "winner-message";
-        message.textContent = winnerMessage;
+
+        if (sharveshVotes.length > tanujVotes.length) {
+          message.textContent = "Sharvesh is currently leading.";
+        } else if (tanujVotes.length > sharveshVotes.length) {
+          message.textContent = "Tanuj is currently leading.";
+        } else {
+          message.textContent = "The results are currently tied.";
+        }
+
         resultsContent.appendChild(message);
 
         const updated = document.createElement("p");
@@ -815,18 +816,24 @@
       parent.appendChild(panel);
     }
 
-    function openResults() {
+    function openResults(forceLock = false) {
+      if (forceLock || hasVotedOnThisBrowser()) {
+        lockResults();
+      }
+
       showOverlay("resultsOverlay");
       refreshResults();
 
-      if (resultsTimer) {
-        clearInterval(resultsTimer);
-      }
-
-      resultsTimer = setInterval(refreshResults, 2000);
+      if (resultsTimer) clearInterval(resultsTimer);
+      resultsTimer = setInterval(() => {
+        refreshResults();
+        checkElection();
+      }, 2000);
     }
 
     function closeResults() {
+      if (resultsLocked) return;
+
       closeOverlay("resultsOverlay");
 
       if (resultsTimer) {
@@ -835,25 +842,213 @@
       }
     }
 
-    // Close an overlay by clicking outside its modal.
+    async function checkElection() {
+      if (checkingElection || winnerStarted) return;
+      checkingElection = true;
+
+      try {
+        const { data, error } = await db.rpc("get_election_status");
+
+        if (error) throw error;
+
+        if (data && data.complete === true) {
+          winnerStarted = true;
+
+          if (resultsTimer) {
+            clearInterval(resultsTimer);
+            resultsTimer = null;
+          }
+
+          await refreshResults();
+          showWinnerScreen();
+        }
+      } catch (err) {
+        // If the status function is unavailable, ordinary voting and
+        // live results continue to work. No database changes are made.
+        console.warn("Election completion check unavailable:", err);
+      } finally {
+        checkingElection = false;
+      }
+    }
+
+    function playDrumroll() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+
+        const audio = new AudioContext();
+        const start = audio.currentTime;
+
+        for (let i = 0; i < 18; i++) {
+          const oscillator = audio.createOscillator();
+          const gain = audio.createGain();
+          const time = start + i * 0.11;
+
+          oscillator.type = "triangle";
+          oscillator.frequency.setValueAtTime(75 + i * 5, time);
+          gain.gain.setValueAtTime(0.0001, time);
+          gain.gain.exponentialRampToValueAtTime(0.12, time + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.09);
+
+          oscillator.connect(gain);
+          gain.connect(audio.destination);
+          oscillator.start(time);
+          oscillator.stop(time + 0.1);
+        }
+
+        setTimeout(() => audio.close(), 2600);
+      } catch (err) {
+        console.warn("Audio playback unavailable:", err);
+      }
+    }
+
+    function showConfetti() {
+      const canvas = document.createElement("canvas");
+      canvas.className = "confetti";
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext("2d");
+      const resize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+
+      resize();
+      window.addEventListener("resize", resize);
+
+      const pieces = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        size: 4 + Math.random() * 7,
+        speed: 2 + Math.random() * 5,
+        drift: Math.random() * 3 - 1.5,
+        angle: Math.random() * 6,
+        spin: Math.random() * 0.12 - 0.06
+      }));
+
+      const colors = ["#e32636", "#ff681f", "#ffd166", "#ffffff"];
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        pieces.forEach((piece, index) => {
+          piece.y += piece.speed;
+          piece.x += piece.drift;
+          piece.angle += piece.spin;
+
+          if (piece.y > canvas.height) {
+            piece.y = -15;
+            piece.x = Math.random() * canvas.width;
+          }
+
+          ctx.save();
+          ctx.translate(piece.x, piece.y);
+          ctx.rotate(piece.angle);
+          ctx.fillStyle = colors[index % colors.length];
+          ctx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size);
+          ctx.restore();
+        });
+
+        if (!document.body.classList.contains("winner-mode")) {
+          canvas.remove();
+          return;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    async function showWinnerScreen() {
+      document.querySelectorAll(".overlay").forEach(el => {
+        el.classList.remove("show");
+      });
+
+      document.body.classList.add("winner-mode");
+
+      let sharveshCount = 0;
+      let tanujCount = 0;
+
+      try {
+        const { data, error } = await db
+          .from("election_votes")
+          .select("candidate");
+
+        if (error) throw error;
+
+        sharveshCount = data.filter(v => v.candidate === "Sharvesh").length;
+        tanujCount = data.filter(v => v.candidate === "Tanuj").length;
+      } catch (err) {
+        console.error("Could not calculate final result:", err);
+      }
+
+      const winner = sharveshCount > tanujCount
+        ? "Sharvesh"
+        : tanujCount > sharveshCount
+          ? "Tanuj"
+          : "IT'S A TIE!";
+
+      const screen = document.createElement("div");
+      screen.className = "winner-screen";
+
+      const heading = document.createElement("h1");
+      heading.textContent = winner === "IT'S A TIE!"
+        ? "FINAL RESULT"
+        : "THE WINNER IS...";
+
+      const name = document.createElement("div");
+      name.className = "winner-name";
+      name.textContent = winner;
+
+      const details = document.createElement("p");
+      details.textContent = winner === "IT'S A TIE!"
+        ? `${sharveshCount} votes each`
+        : `${winner === "Sharvesh" ? sharveshCount : tanujCount} votes`;
+
+      screen.append(heading, name, details);
+      document.body.appendChild(screen);
+
+      showConfetti();
+      playDrumroll();
+    }
+
+    // Close overlays by clicking outside their modal.
     document.querySelectorAll(".overlay").forEach(overlay => {
       overlay.addEventListener("click", event => {
-        if (event.target === overlay) {
-          if (overlay.id === "resultsOverlay") {
-            closeResults();
-          } else {
-            closeOverlay(overlay.id);
-          }
+        if (event.target !== overlay) return;
+
+        if (overlay.id === "resultsOverlay") {
+          closeResults();
+        } else {
+          closeOverlay(overlay.id);
         }
       });
     });
 
-    // Allow Enter to submit the name in the confirmation form.
-    document.getElementById("voterName").addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        submitVote();
+    // Prevent closing locked results with Escape.
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && resultsLocked &&
+          document.getElementById("resultsOverlay").classList.contains("show")) {
+        event.preventDefault();
       }
     });
+
+    document.getElementById("voterName").addEventListener("keydown", event => {
+      if (event.key === "Enter") submitVote();
+    });
+
+    // Restore the results view on a browser that has already voted.
+    function initializePage() {
+      if (hasVotedOnThisBrowser()) {
+        lockResults();
+        openResults(true);
+      }
+
+      checkElection();
+    }
+
+    initializePage();
   </script>
 </body>
 </html>
