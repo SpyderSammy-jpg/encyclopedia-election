@@ -2,697 +2,858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7th Grade Encyclopedia | Ownership Election</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7th Grade Encyclopedia Ownership Voting</title>
 
-<style>
-:root {
-  --red: #ed2525;
-  --orange: #ff672e;
-  --black: #090909;
-  --panel: #151515;
-  --white: #f7f7f7;
-  --muted: #a5a5a5;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: Arial, Helvetica, sans-serif;
-  min-height: 100vh;
-}
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 15% 10%, #8b111133, transparent 45%),
-    radial-gradient(ellipse at 90% 80%, #e94b171c, transparent 40%);
-}
-button, input { font: inherit; }
-button { cursor: pointer; }
-button:focus-visible, input:focus-visible {
-  outline: 3px solid #ff9b70;
-  outline-offset: 3px;
-}
-header {
-  padding: 55px 20px 35px;
-  text-align: center;
-}
-.eyebrow {
-  color: #ff7657;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-size: 12px;
-  font-weight: bold;
-}
-h1 {
-  font-size: clamp(32px, 6vw, 58px);
-  margin: 15px auto;
-  max-width: 850px;
-  line-height: 1.08;
-  font-weight: 900;
-  background: linear-gradient(100deg, #fff 20%, #ff7770 65%, #ff9a43);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-header p {
-  color: #c9c9c9;
-  font-size: 17px;
-  line-height: 1.6;
-}
-main {
-  max-width: 1050px;
-  margin: auto;
-  padding: 0 20px 70px;
-}
-.section { margin-top: 38px; }
-.section-title {
-  font-size: 25px;
-  margin-bottom: 18px;
-  border-left: 5px solid var(--red);
-  padding-left: 13px;
-}
-.speech-grid, .candidate-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-.card {
-  background: linear-gradient(145deg, #1b1b1b, #101010);
-  border: 1px solid #343434;
-  border-radius: 17px;
-  padding: 25px;
-  box-shadow: 0 12px 35px #0005;
-}
-.card h3 { margin: 0 0 9px; font-size: 22px; }
-.card p {
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-.btn {
-  border: 0;
-  border-radius: 11px;
-  padding: 14px 20px;
-  font-weight: 800;
-  transition: transform .18s, filter .18s;
-}
-.btn:hover { transform: translateY(-2px); filter: brightness(1.13); }
-.btn:disabled { opacity: .55; cursor: wait; transform: none; }
-.speech-btn {
-  background: #292929;
-  color: white;
-  border: 1px solid #555;
-  width: 100%;
-}
-.vote-btn {
-  width: 100%;
-  min-height: 125px;
-  font-size: clamp(23px, 4vw, 34px);
-  color: white;
-  border: 1px solid #ffffff30;
-  box-shadow: 0 10px 30px #0006;
-}
-.sharvesh {
-  background: linear-gradient(125deg, #a90e18, #f04425 60%, #ff7738);
-}
-.tanuj {
-  background: linear-gradient(125deg, #242424, #454545);
-}
-.vote-note {
-  color: #aaa;
-  text-align: center;
-  line-height: 1.6;
-  margin-top: 17px;
-}
-.privacy-note {
-  background: #211717;
-  border: 1px solid #633333;
-  padding: 14px 17px;
-  border-radius: 12px;
-  color: #e8caca;
-  line-height: 1.5;
-  font-size: 13px;
-  margin-top: 20px;
-}
-.results-button {
-  background: #242424;
-  color: white;
-  border: 1px solid #555;
-  width: 100%;
-  margin-top: 18px;
-}
-.status {
-  text-align: center;
-  color: #aaa;
-  font-size: 13px;
-  margin-top: 20px;
-}
-footer {
-  text-align: center;
-  padding: 25px;
-  border-top: 1px solid #292929;
-  color: #777;
-  font-size: 12px;
-}
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-/* Full-screen overlays */
-.overlay {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  background: #080808f7;
-  overflow-y: auto;
-  padding: 25px 16px;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(12px);
-}
-.overlay.active { display: flex; }
-.modal {
-  width: min(680px, 100%);
-  max-height: 90vh;
-  overflow-y: auto;
-  background: linear-gradient(150deg, #202020, #101010);
-  border: 1px solid #484848;
-  border-radius: 20px;
-  padding: 32px;
-  position: relative;
-  box-shadow: 0 25px 90px #000c;
-}
-.modal.wide { width: min(850px, 100%); }
-.close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: #333;
-  color: white;
-  border: 1px solid #555;
-  width: 39px;
-  height: 39px;
-  border-radius: 50%;
-  font-size: 23px;
-}
-.modal h2 {
-  font-size: 30px;
-  margin: 4px 45px 20px 0;
-}
-.speech-text {
-  white-space: pre-line;
-  color: #ddd;
-  line-height: 1.8;
-  font-size: 15px;
-}
-.form-label {
-  display: block;
-  color: #ddd;
-  margin: 18px 0 8px;
-  font-weight: bold;
-}
-.field {
-  width: 100%;
-  background: #090909;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 10px;
-  padding: 15px;
-}
-.field::placeholder { color: #777; }
-.confirm-candidate {
-  color: #ff7765;
-  font-size: 19px;
-  font-weight: 900;
-  margin: 15px 0;
-}
-.primary-action {
-  width: 100%;
-  margin-top: 22px;
-  background: linear-gradient(110deg, #b81720, #f04c28, #ff7938);
-  color: white;
-  padding: 16px;
-  font-size: 17px;
-}
-.secondary-action {
-  width: 100%;
-  margin-top: 10px;
-  color: white;
-  background: #333;
-}
-.message {
-  display: none;
-  padding: 13px;
-  border-radius: 9px;
-  margin-top: 14px;
-  line-height: 1.5;
-  font-size: 14px;
-}
-.message.error { display: block; background: #451818; color: #ffc2c2; }
-.message.info { display: block; background: #18321f; color: #b9f4c7; }
-.success-icon {
-  width: 76px;
-  height: 76px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #174d2b;
-  color: #7df49b;
-  font-size: 42px;
-  margin-bottom: 22px;
-}
-.success-subtitle { color: #bbb; line-height: 1.7; }
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  margin: 20px 0;
-}
-.stat {
-  background: #242424;
-  border: 1px solid #393939;
-  padding: 18px;
-  border-radius: 13px;
-}
-.stat strong { display: block; font-size: 32px; margin-top: 8px; }
-.stat span { color: #aaa; font-size: 13px; }
-.result-candidate { margin: 22px 0; }
-.result-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-weight: bold;
-  margin-bottom: 9px;
-}
-.track {
-  height: 17px;
-  border-radius: 30px;
-  background: #303030;
-  overflow: hidden;
-}
-.bar {
-  height: 100%;
-  width: 0;
-  border-radius: 30px;
-  transition: width .8s ease;
-}
-.bar.red { background: linear-gradient(90deg, #b81720, #ff753d); }
-.bar.gray { background: linear-gradient(90deg, #555, #aaa); }
-.voter-list {
-  background: #151515;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 15px;
-  margin-top: 12px;
-}
-.voter-list h3 { font-size: 16px; margin: 0 0 10px; }
-.voter-list p { color: #bbb; margin: 0; line-height: 1.7; overflow-wrap: anywhere; }
-.winner {
-  border: 1px solid #773d26;
-  background: #29180f;
-  color: #ffbd8b;
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  margin-top: 20px;
-  line-height: 1.6;
-}
-.small-muted { color: #888; font-size: 12px; line-height: 1.6; }
-.loading { color: #aaa; text-align: center; padding: 20px; }
-@media (max-width: 650px) {
-  .speech-grid, .candidate-grid { grid-template-columns: 1fr; }
-  header { padding-top: 38px; }
-  .modal { padding: 25px 20px; }
-  .modal h2 { font-size: 25px; }
-}
-</style>
+  <style>
+    :root {
+      --red: #e32636;
+      --dark-red: #9f1020;
+      --orange: #ff681f;
+      --black: #090909;
+      --panel: #171717;
+      --gray: #a5a5a5;
+      --white: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% 0%, #501016 0, transparent 38%),
+        linear-gradient(145deg, #080808, #19090b 55%, #080808);
+      color: var(--white);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(100% - 32px, 1050px);
+      margin: auto;
+      padding: 42px 0 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: clamp(30px, 6vw, 54px);
+      line-height: 1.05;
+      margin: 14px 0;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    h1 span {
+      color: var(--red);
+    }
+
+    .subtitle {
+      color: #d0d0d0;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .notice {
+      border: 1px solid #713039;
+      background: #210d11;
+      color: #f0d7da;
+      border-radius: 12px;
+      padding: 14px 17px;
+      margin: 25px auto;
+      max-width: 780px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 25px;
+      margin: 42px 0 20px;
+    }
+
+    .section-title span {
+      color: var(--orange);
+    }
+
+    .candidate-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .candidate {
+      background: linear-gradient(145deg, #1d1d1d, #101010);
+      border: 1px solid #393939;
+      border-radius: 18px;
+      padding: 27px;
+      text-align: center;
+      box-shadow: 0 12px 35px #0007;
+    }
+
+    .candidate h3 {
+      font-size: 29px;
+      margin: 0 0 8px;
+    }
+
+    .candidate p {
+      color: var(--gray);
+      font-size: 14px;
+      min-height: 22px;
+    }
+
+    .candidate-mark {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      background: linear-gradient(135deg, var(--red), var(--orange));
+      font-size: 30px;
+      font-weight: 900;
+      box-shadow: 0 0 25px #e3263650;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 9px;
+      padding: 13px 19px;
+      font-weight: 800;
+      transition: transform .15s, filter .15s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.12);
+    }
+
+    .button-red {
+      color: white;
+      background: linear-gradient(100deg, var(--dark-red), var(--red));
+    }
+
+    .button-orange {
+      color: white;
+      background: linear-gradient(100deg, #e64b12, var(--orange));
+    }
+
+    .button-dark {
+      color: white;
+      background: #303030;
+      border: 1px solid #555;
+    }
+
+    .button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .candidate-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .bottom-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .small-note {
+      color: #929292;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 20px;
+    }
+
+    .status {
+      min-height: 22px;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #ffb18f;
+    }
+
+    /* Overlays */
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000e;
+      backdrop-filter: blur(7px);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(100%, 570px);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: linear-gradient(145deg, #202020, #101010);
+      border: 1px solid #633038;
+      border-radius: 17px;
+      padding: 28px;
+      box-shadow: 0 20px 80px #000b;
+      position: relative;
+    }
+
+    .modal h2 {
+      margin: 0 35px 18px 0;
+      font-size: 27px;
+    }
+
+    .modal p {
+      color: #ddd;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .close {
+      position: absolute;
+      top: 13px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+      border: 0;
+      border-radius: 50%;
+      background: #343434;
+      color: white;
+      font-size: 23px;
+    }
+
+    .field-label {
+      display: block;
+      margin: 20px 0 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 9px;
+      background: #090909;
+      border: 1px solid #555;
+      color: white;
+      outline: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px #ff681f25;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .success-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #174c2a;
+      color: #75f29b;
+      font-size: 42px;
+    }
+
+    .success-content {
+      text-align: center;
+    }
+
+    .success-content h2 {
+      margin-right: 0;
+    }
+
+    /* Results */
+
+    .results-panel {
+      background: #111;
+      border: 1px solid #383838;
+      border-radius: 14px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+
+    .result-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 9px;
+      font-weight: 800;
+    }
+
+    .result-track {
+      height: 13px;
+      background: #363636;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .result-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--dark-red), var(--orange));
+      border-radius: 20px;
+      transition: width .35s;
+    }
+
+    .voter-list {
+      padding: 0;
+      margin: 12px 0 0;
+      list-style: none;
+    }
+
+    .voter-list li {
+      padding: 9px 10px;
+      margin-top: 6px;
+      border-radius: 7px;
+      background: #222;
+      color: #ddd;
+      font-size: 13px;
+    }
+
+    .winner-message {
+      color: #ff9c69;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.6;
+      margin-top: 20px;
+    }
+
+    .loading {
+      color: #aaa;
+      text-align: center;
+      padding: 20px;
+    }
+
+    @media (max-width: 650px) {
+      .candidate-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding-top: 28px;
+      }
+
+      .candidate {
+        padding: 23px;
+      }
+
+      .modal {
+        padding: 23px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<header>
-  <div class="eyebrow">The election is here</div>
-  <h1>7th Grade Encyclopedia Ownership Voting</h1>
-  <p>Please vote for who you want to be Owner of the Encyclopedia.</p>
-</header>
+  <main class="container">
 
-<main>
-  <section class="section">
-    <h2 class="section-title">Speeches</h2>
-    <div class="speech-grid">
-      <article class="card">
+    <header>
+      <div class="eyebrow">The official election</div>
+      <h1>7th Grade <span>Encyclopedia</span><br>Ownership Voting</h1>
+      <div class="subtitle">
+        Please vote for who you want to be Owner of the Encyclopedia.
+      </div>
+    </header>
+
+    <div class="notice">
+      Enter your own approved name to vote. Each approved name can submit
+      only one vote. Your name and candidate choice will be visible in the
+      public results.
+    </div>
+
+    <h2 class="section-title">Meet the <span>Candidates</span></h2>
+
+    <section class="candidate-grid">
+
+      <article class="candidate">
+        <div class="candidate-mark">S</div>
         <h3>Sharvesh</h3>
-        <p>Current Owner</p>
-        <button class="btn speech-btn" onclick="openSpeech('sharvesh')">
-          Read Sharvesh's Speech
-        </button>
+        <p>Candidate for Encyclopedia Owner</p>
+
+        <div class="candidate-actions">
+          <button class="button button-dark" onclick="openSpeech('sharvesh')">
+            Read Speech
+          </button>
+          <button class="button button-red" onclick="chooseCandidate('Sharvesh')">
+            Vote Sharvesh
+          </button>
+        </div>
       </article>
-      <article class="card">
+
+      <article class="candidate">
+        <div class="candidate-mark">T</div>
         <h3>Tanuj</h3>
-        <p>Candidate for Owner</p>
-        <button class="btn speech-btn" onclick="openSpeech('tanuj')">
-          Read Tanuj's Speech
-        </button>
+        <p>Candidate for Encyclopedia Owner</p>
+
+        <div class="candidate-actions">
+          <button class="button button-dark" onclick="openSpeech('tanuj')">
+            Read Speech
+          </button>
+          <button class="button button-red" onclick="chooseCandidate('Tanuj')">
+            Vote Tanuj
+          </button>
+        </div>
       </article>
-    </div>
-  </section>
 
-  <section class="section">
-    <h2 class="section-title">Vote</h2>
-    <div class="candidate-grid">
-      <button class="btn vote-btn sharvesh" onclick="chooseCandidate('Sharvesh')">
-        VOTE FOR SHARVESH
-      </button>
-      <button class="btn vote-btn tanuj" onclick="chooseCandidate('Tanuj')">
-        VOTE FOR TANUJ
+    </section>
+
+    <div class="bottom-actions">
+      <button class="button button-orange" onclick="openResults()">
+        View Live Results
       </button>
     </div>
-    <p class="vote-note">You can only vote once, so choose wisely.</p>
-    <div class="privacy-note">
-      <strong>Voting transparency:</strong> Voters' names and their selected
-      candidates will appear publicly on the election results page. Your private
-      voting code will not be displayed.
+
+    <div id="pageStatus" class="status" aria-live="polite"></div>
+
+    <div class="small-note">
+      7th Grade Encyclopedia Ownership Election
     </div>
-    <button class="btn results-button" onclick="openResults()">
-      VIEW ELECTION RESULTS
-    </button>
-    <div class="status" id="connectionStatus">Connecting to election database...</div>
-  </section>
-</main>
 
-<footer>7th Grade Encyclopedia • Ownership Election</footer>
+  </main>
 
-<!-- Speech overlay -->
-<div class="overlay" id="speechOverlay" role="dialog" aria-modal="true">
-  <div class="modal">
-    <button class="close" onclick="closeOverlay('speechOverlay')" aria-label="Close">×</button>
-    <h2 id="speechTitle">Candidate Speech</h2>
-    <div class="speech-text" id="speechContent"></div>
-  </div>
-</div>
+  <!-- SPEECH MODAL -->
 
-<!-- Confirmation overlay -->
-<div class="overlay" id="confirmOverlay" role="dialog" aria-modal="true">
-  <div class="modal">
-    <button class="close" onclick="closeOverlay('confirmOverlay')" aria-label="Close">×</button>
-    <h2>Confirm Your Vote</h2>
-    <p>Are you sure you want to submit your vote?</p>
-    <div class="confirm-candidate" id="chosenCandidate"></div>
-
-    <label class="form-label" for="voterName">Enter your eligible voter name</label>
-    <input class="field" id="voterName" type="text" maxlength="60"
-      autocomplete="name" placeholder="Your name">
-
-    <label class="form-label" for="voterCode">Enter your private voting code</label>
-    <input class="field" id="voterCode" type="password" maxlength="40"
-      autocomplete="off" placeholder="Your single-use code">
-
-    <p class="small-muted">
-      Your code is private. Never share it with another voter.
-      Your name and candidate choice will be public after submission.
-    </p>
-    <div class="message" id="voteMessage" role="status"></div>
-    <button class="btn primary-action" id="submitVote" onclick="submitVote()">
-      CONFIRM MY VOTE
-    </button>
-    <button class="btn secondary-action" onclick="closeOverlay('confirmOverlay')">
-      GO BACK
-    </button>
-  </div>
-</div>
-
-<!-- Success overlay -->
-<div class="overlay" id="successOverlay" role="dialog" aria-modal="true">
-  <div class="modal">
-    <button class="close" onclick="finishSuccess()" aria-label="Close">×</button>
-    <div class="success-icon">✓</div>
-    <h2>Your vote has been submitted!</h2>
-    <p class="success-subtitle">
-      Thank you for participating in the 7th Grade Encyclopedia ownership
-      election. Your vote has been securely recorded.
-    </p>
-    <button class="btn primary-action" onclick="finishSuccess()">
-      VIEW ELECTION RESULTS
-    </button>
-  </div>
-</div>
-
-<!-- Results overlay -->
-<div class="overlay" id="resultsOverlay" role="dialog" aria-modal="true">
-  <div class="modal wide">
-    <button class="close" onclick="closeOverlay('resultsOverlay')" aria-label="Close">×</button>
-    <h2>Election Results</h2>
-    <p class="small-muted">Live results, refreshed every two seconds.</p>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <span>Total votes submitted</span>
-        <strong id="totalVotes">0</strong>
-      </div>
-      <div class="stat">
-        <span>Eligible voters</span>
-        <strong>9</strong>
+  <div class="overlay" id="speechOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <button class="close" onclick="closeOverlay('speechOverlay')" aria-label="Close">×</button>
+      <h2 id="speechTitle">Candidate Speech</h2>
+      <div id="speechText"></div>
+      <div class="modal-actions">
+        <button class="button button-dark" onclick="closeOverlay('speechOverlay')">
+          Close
+        </button>
       </div>
     </div>
-
-    <div class="result-candidate">
-      <div class="result-heading">
-        <span>Sharvesh</span>
-        <span id="sharveshResult">0 votes · 0%</span>
-      </div>
-      <div class="track"><div class="bar red" id="sharveshBar"></div></div>
-    </div>
-
-    <div class="result-candidate">
-      <div class="result-heading">
-        <span>Tanuj</span>
-        <span id="tanujResult">0 votes · 0%</span>
-      </div>
-      <div class="track"><div class="bar gray" id="tanujBar"></div></div>
-    </div>
-
-    <div class="winner" id="winnerMessage">Waiting for the first vote...</div>
-
-    <div class="voter-list">
-      <h3>People who voted for Sharvesh</h3>
-      <p id="sharveshVoters">No votes yet.</p>
-    </div>
-    <div class="voter-list">
-      <h3>People who voted for Tanuj</h3>
-      <p id="tanujVoters">No votes yet.</p>
-    </div>
-    <p class="small-muted" id="lastUpdated">Waiting for election data...</p>
   </div>
-</div>
 
-<script>
-/* ==========================================
-   SUPABASE CONNECTION
-   These are the public project URL and
-   publishable key, never a secret key.
-========================================== */
+  <!-- VOTE CONFIRMATION MODAL -->
 
-const SUPABASE_URL = "https://mjhtyllbtdgxiamzjdhd.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_secret_Eap1ZLgwsJq4rGce7B4W7g_nJh-419T";
+  <div class="overlay" id="voteOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <button class="close" onclick="closeOverlay('voteOverlay')" aria-label="Close">×</button>
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+      <h2>Cast Your Vote</h2>
+      <p>
+        You selected <strong id="selectedCandidateText"></strong>.
+        Enter your approved name below.
+      </p>
 
-let selectedCandidate = null;
-let resultsTimer = null;
-let isSubmitting = false;
+      <label class="field-label" for="voterName">Your name</label>
+      <input
+        class="text-input"
+        id="voterName"
+        type="text"
+        maxlength="60"
+        autocomplete="off"
+        placeholder="Enter your approved name"
+      >
 
-const speeches = {
-  sharvesh: {
-    title: "Sharvesh's Speech",
-    text: `Hello everyone! I am Sharvesh, and I am asking for your vote to continue being the Owner of the 7th Grade Encyclopedia.
+      <p class="small-note" style="text-align:left">
+        Please enter your own name. Each approved name can vote only once.
+      </p>
 
-First, I want to address something important: the use of Artificial Intelligence. I support using AI as a tool to improve our encyclopedia. AI is not automatically harmful, and using it does not mean that someone is avoiding hard work. It can help us research, organize information, improve explanations, and save time. What matters most is how responsibly we use it and whether we verify the information it provides.
+      <div id="voteError" class="status" aria-live="polite"></div>
 
-I have put a tremendous amount of effort into building this encyclopedia. I am currently the Owner, and I have worked on creating a website, an application, and an enormous collection of educational notes. I have personally created 132 pages of notes without AI, and 154 pages if we include the work involving AI. If we also count the pages in our books, the total exceeds 300 pages!
+      <div class="modal-actions">
+        <button class="button button-dark" onclick="closeOverlay('voteOverlay')">
+          Cancel
+        </button>
+        <button class="button button-red" id="submitVoteButton" onclick="submitVote()">
+          Confirm Vote
+        </button>
+      </div>
+    </div>
+  </div>
 
-These accomplishments represent the time, dedication, and effort I have invested in this encyclopedia. I have worked to make our encyclopedia more organized, accessible, and useful for everyone. I understand that Tanuj has his own reasons for wanting ownership, and I respect his contributions to the original document.
+  <!-- SUCCESS MODAL -->
 
-However, I believe that continuing with the current ownership structure will provide consistency and allow the encyclopedia to keep developing. I am not asking you to vote for me simply because I created the website or because I am the current Owner. I am asking you to consider my contributions, my plans for the future, and my commitment to improving this encyclopedia.
+  <div class="overlay" id="successOverlay" role="dialog" aria-modal="true">
+    <div class="modal success-content">
+      <div class="success-icon">✓</div>
+      <h2>Vote Successfully Recorded!</h2>
+      <p>Your vote has been submitted. Thank you for participating!</p>
+      <div class="modal-actions">
+        <button class="button button-orange" onclick="closeSuccessAndResults()">
+          View Results
+        </button>
+      </div>
+    </div>
+  </div>
 
-I want to continue expanding our resources, improving our website, adding more educational content, and making this encyclopedia something our entire grade can be proud of. I believe that I have demonstrated the dedication and initiative needed to lead this encyclopedia. Your vote is your choice, and I respect whichever candidate you support.
+  <!-- RESULTS MODAL -->
 
-Thank you for taking the time to read my speech, and I hope I can count on your vote!
+  <div class="overlay" id="resultsOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <button class="close" onclick="closeResults()" aria-label="Close">×</button>
 
-- Sharvesh`
-  },
-  tanuj: {
-    title: "Tanuj's Speech",
-    text: `I requested my ownership of the docs because of the fact that Sharvesh has been using a lot of AI lately and saying that there wasn't enough time. I was owner of the original doc but when it was split into subjects, Sharvesh made them. I don't care about being owner of the website, I'm ok with editor but for the docs I would like my ownership back. Me and sharvesh have decided to vote for this. Please vote for me. THANK YOU - Tanuj`
-  }
-};
+      <h2>Live Election Results</h2>
+      <p>Results refresh automatically while this window is open.</p>
 
-function showOverlay(id) {
-  document.getElementById(id).classList.add("active");
-  document.body.style.overflow = "hidden";
-}
-function closeOverlay(id) {
-  document.getElementById(id).classList.remove("active");
-  if (!document.querySelector(".overlay.active")) {
-    document.body.style.overflow = "";
-  }
-}
-function openSpeech(candidate) {
-  const speech = speeches[candidate];
-  document.getElementById("speechTitle").textContent = speech.title;
-  document.getElementById("speechContent").textContent = speech.text;
-  showOverlay("speechOverlay");
-}
-function chooseCandidate(candidate) {
-  selectedCandidate = candidate;
-  document.getElementById("chosenCandidate").textContent =
-    "Your selected candidate: " + candidate;
-  document.getElementById("voterName").value = "";
-  document.getElementById("voterCode").value = "";
-  setVoteMessage("", "");
-  showOverlay("confirmOverlay");
-}
-function setVoteMessage(message, type) {
-  const el = document.getElementById("voteMessage");
-  el.textContent = message;
-  el.className = "message" + (type ? " " + type : "");
-}
-function finishSuccess() {
-  closeOverlay("successOverlay");
-  openResults();
-}
+      <div id="resultsContent">
+        <div class="loading">Loading results...</div>
+      </div>
 
-async function submitVote() {
-  if (isSubmitting) return;
+      <div class="modal-actions">
+        <button class="button button-dark" onclick="refreshResults()">
+          Refresh Now
+        </button>
+        <button class="button button-red" onclick="closeResults()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
 
-  const name = document.getElementById("voterName").value.trim();
-  const code = document.getElementById("voterCode").value.trim();
+  <script>
+    // Supabase configuration
+    const SUPABASE_URL = "https://mjhtyllbtdgxiamzjdhd.supabase.co";
 
-  if (!name || !code) {
-    setVoteMessage("Please enter both your name and private voting code.", "error");
-    return;
-  }
-  if (!selectedCandidate) {
-    setVoteMessage("Please select a candidate first.", "error");
-    return;
-  }
+    // Replace this with your existing Supabase publishable key.
+    // Never put a Supabase secret key in this file.
+    const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE";
 
-  isSubmitting = true;
-  const button = document.getElementById("submitVote");
-  button.disabled = true;
-  button.textContent = "SUBMITTING...";
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
 
-  try {
-    const { data, error } = await db.rpc("cast_vote", {
-      p_name: name,
-      p_candidate: selectedCandidate,
-      p_code: code
+    let selectedCandidate = null;
+    let resultsTimer = null;
+
+    const speeches = {
+      sharvesh: {
+        title: "Sharvesh's Speech",
+        paragraphs: [
+          "I believe that I should continue as the owner of the 7th Grade Encyclopedia because I have put a lot of time and effort into building it.",
+          "I understand that there have been concerns about the use of AI. I believe AI is a tool, and it should be used responsibly. It does not replace the time and work that goes into creating and organizing a project.",
+          "I have worked on the Encyclopedia, its website, and its organization. I also created the website and the voting system so that everyone could have a chance to participate in this decision.",
+          "I have written 132 pages of notes without AI. Including pages where AI was used, the total is 154 pages. If we also count the pages in the books, the amount of material is over 300 pages.",
+          "I have spent time organizing information, creating pages, fixing mistakes, and making the Encyclopedia easier to use.",
+          "I want the Encyclopedia to keep growing, and I want everyone to be able to contribute ideas and improve it.",
+          "Being the owner is not just about having a title. It is about taking responsibility for the work and making sure the project continues to improve.",
+          "I respect Tanuj and the work he has done. I also think this election is a fair way for everyone to share their opinion.",
+          "If you vote for me, I will continue working on the Encyclopedia and improving the website and its resources.",
+          "Thank you for considering my side and taking the time to vote."
+        ]
+      },
+
+      tanuj: {
+        title: "Tanuj's Speech",
+        paragraphs: [
+          "I requested my ownership of the docs because of the fact that Sharvesh has been using a lot of AI lately and saying that there wasn't enough time. I was owner of the original doc but when it was split into subjects, Sharvesh made them. I don't care about being owner of the website, I'm ok with editor but for the docs I would like my ownership back. Me and sharvesh have decided to vote for this. Please vote for me. THANK YOU - Tanuj"
+        ]
+      }
+    };
+
+    function showOverlay(id) {
+      document.getElementById(id).classList.add("show");
+    }
+
+    function closeOverlay(id) {
+      document.getElementById(id).classList.remove("show");
+    }
+
+    function openSpeech(candidate) {
+      const speech = speeches[candidate];
+
+      document.getElementById("speechTitle").textContent = speech.title;
+
+      const speechText = document.getElementById("speechText");
+      speechText.replaceChildren();
+
+      speech.paragraphs.forEach(paragraph => {
+        const p = document.createElement("p");
+        p.textContent = paragraph;
+        speechText.appendChild(p);
+      });
+
+      showOverlay("speechOverlay");
+    }
+
+    function chooseCandidate(candidate) {
+      selectedCandidate = candidate;
+
+      document.getElementById("selectedCandidateText").textContent = candidate;
+      document.getElementById("voterName").value = "";
+      document.getElementById("voteError").textContent = "";
+
+      showOverlay("voteOverlay");
+      setTimeout(() => document.getElementById("voterName").focus(), 100);
+    }
+
+    async function submitVote() {
+      const name = document.getElementById("voterName").value.trim();
+      const button = document.getElementById("submitVoteButton");
+      const error = document.getElementById("voteError");
+
+      error.textContent = "";
+
+      if (!name) {
+        error.textContent = "Please enter your name.";
+        return;
+      }
+
+      if (!selectedCandidate) {
+        error.textContent = "Please select a candidate first.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Submitting...";
+
+      try {
+        const { data, error: rpcError } = await db.rpc(
+          "cast_vote_by_name",
+          {
+            p_name: name,
+            p_candidate: selectedCandidate
+          }
+        );
+
+        if (rpcError) {
+          throw rpcError;
+        }
+
+        if (!data || data.success !== true) {
+          error.textContent =
+            data?.message || "Your vote could not be submitted.";
+          return;
+        }
+
+        closeOverlay("voteOverlay");
+        showOverlay("successOverlay");
+
+        document.getElementById("voterName").value = "";
+
+      } catch (err) {
+        console.error("Voting error:", err);
+        error.textContent =
+          "Something went wrong. Please try again later.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Confirm Vote";
+      }
+    }
+
+    function closeSuccessAndResults() {
+      closeOverlay("successOverlay");
+      openResults();
+    }
+
+    async function refreshResults() {
+      const resultsContent = document.getElementById("resultsContent");
+
+      try {
+        const { data, error } = await db
+          .from("election_votes")
+          .select("voter_name,candidate,created_at")
+          .order("created_at", { ascending: true });
+
+        if (error) {
+          throw error;
+        }
+
+        const votes = data || [];
+        const sharveshVotes = votes.filter(v => v.candidate === "Sharvesh");
+        const tanujVotes = votes.filter(v => v.candidate === "Tanuj");
+
+        const total = votes.length;
+        const sharveshPercent = total
+          ? Math.round((sharveshVotes.length / total) * 100)
+          : 0;
+        const tanujPercent = total
+          ? Math.round((tanujVotes.length / total) * 100)
+          : 0;
+
+        let winnerMessage = "Voting is underway. The results are currently tied.";
+
+        if (sharveshVotes.length > tanujVotes.length) {
+          winnerMessage = "Thank you for everyone who voted for me! -Sharvesh";
+        } else if (tanujVotes.length > sharveshVotes.length) {
+          winnerMessage = "Tanuj is currently leading.";
+        }
+
+        resultsContent.replaceChildren();
+
+        const summary = document.createElement("p");
+        summary.textContent = `Total votes recorded: ${total}`;
+        resultsContent.appendChild(summary);
+
+        addCandidateResult(
+          resultsContent,
+          "Sharvesh",
+          sharveshVotes.length,
+          sharveshPercent,
+          sharveshVotes
+        );
+
+        addCandidateResult(
+          resultsContent,
+          "Tanuj",
+          tanujVotes.length,
+          tanujPercent,
+          tanujVotes
+        );
+
+        const message = document.createElement("div");
+        message.className = "winner-message";
+        message.textContent = winnerMessage;
+        resultsContent.appendChild(message);
+
+        const updated = document.createElement("p");
+        updated.className = "small-note";
+        updated.textContent =
+          "Automatically updated. Names and choices are publicly visible.";
+        resultsContent.appendChild(updated);
+
+      } catch (err) {
+        console.error("Results error:", err);
+        resultsContent.textContent =
+          "Unable to load results right now. Please try again.";
+      }
+    }
+
+    function addCandidateResult(parent, candidate, count, percent, votes) {
+      const panel = document.createElement("section");
+      panel.className = "results-panel";
+
+      const heading = document.createElement("div");
+      heading.className = "result-heading";
+
+      const name = document.createElement("span");
+      name.textContent = candidate;
+
+      const score = document.createElement("span");
+      score.textContent = `${count} votes (${percent}%)`;
+
+      heading.append(name, score);
+      panel.appendChild(heading);
+
+      const track = document.createElement("div");
+      track.className = "result-track";
+
+      const fill = document.createElement("div");
+      fill.className = "result-fill";
+      fill.style.width = `${percent}%`;
+
+      track.appendChild(fill);
+      panel.appendChild(track);
+
+      const listTitle = document.createElement("strong");
+      listTitle.textContent = "Voters:";
+      panel.appendChild(listTitle);
+
+      const list = document.createElement("ul");
+      list.className = "voter-list";
+
+      if (votes.length === 0) {
+        const empty = document.createElement("li");
+        empty.textContent = "No votes yet.";
+        list.appendChild(empty);
+      } else {
+        votes.forEach(vote => {
+          const item = document.createElement("li");
+          item.textContent = vote.voter_name;
+          list.appendChild(item);
+        });
+      }
+
+      panel.appendChild(list);
+      parent.appendChild(panel);
+    }
+
+    function openResults() {
+      showOverlay("resultsOverlay");
+      refreshResults();
+
+      if (resultsTimer) {
+        clearInterval(resultsTimer);
+      }
+
+      resultsTimer = setInterval(refreshResults, 2000);
+    }
+
+    function closeResults() {
+      closeOverlay("resultsOverlay");
+
+      if (resultsTimer) {
+        clearInterval(resultsTimer);
+        resultsTimer = null;
+      }
+    }
+
+    // Close an overlay by clicking outside its modal.
+    document.querySelectorAll(".overlay").forEach(overlay => {
+      overlay.addEventListener("click", event => {
+        if (event.target === overlay) {
+          if (overlay.id === "resultsOverlay") {
+            closeResults();
+          } else {
+            closeOverlay(overlay.id);
+          }
+        }
+      });
     });
 
-    if (error) throw error;
-
-    if (!data || data.success !== true) {
-      setVoteMessage(data?.message || "Your vote could not be submitted.", "error");
-      return;
-    }
-
-    // This is only a convenience for this browser.
-    // The database is the actual one-vote enforcement.
-    localStorage.setItem("encyclopedia_election_voted", "true");
-
-    closeOverlay("confirmOverlay");
-    showOverlay("successOverlay");
-    await refreshResults();
-  } catch (error) {
-    console.error("Voting error:", error);
-    setVoteMessage(
-      "We couldn't submit your vote. Please check your connection and try again.",
-      "error"
-    );
-  } finally {
-    isSubmitting = false;
-    button.disabled = false;
-    button.textContent = "CONFIRM MY VOTE";
-  }
-}
-
-async function refreshResults() {
-  try {
-    const { data, error } = await db
-      .from("election_votes")
-      .select("voter_name,candidate,created_at")
-      .order("created_at", { ascending: true });
-
-    if (error) throw error;
-
-    const votes = data || [];
-    const sharveshVotes = votes.filter(v => v.candidate === "Sharvesh");
-    const tanujVotes = votes.filter(v => v.candidate === "Tanuj");
-    const total = votes.length;
-
-    const sCount = sharveshVotes.length;
-    const tCount = tanujVotes.length;
-    const sPercent = total ? Math.round((sCount / total) * 100) : 0;
-    const tPercent = total ? Math.round((tCount / total) * 100) : 0;
-
-    document.getElementById("totalVotes").textContent = total;
-    document.getElementById("sharveshResult").textContent =
-      `${sCount} votes · ${sPercent}%`;
-    document.getElementById("tanujResult").textContent =
-      `${tCount} votes · ${tPercent}%`;
-
-    document.getElementById("sharveshBar").style.width = sPercent + "%";
-    document.getElementById("tanujBar").style.width = tPercent + "%";
-
-    document.getElementById("sharveshVoters").textContent =
-      sCount ? sharveshVotes.map(v => v.voter_name).join(", ") : "No votes yet.";
-    document.getElementById("tanujVoters").textContent =
-      tCount ? tanujVotes.map(v => v.voter_name).join(", ") : "No votes yet.";
-
-    let winnerText = "Waiting for the first vote...";
-    if (total > 0 && sCount > tCount) {
-      winnerText = "Sharvesh is currently leading. Thank you for everyone who voted for me! -Sharvesh";
-    } else if (total > 0 && tCount > sCount) {
-      winnerText = "Tanuj is currently leading.";
-    } else if (total > 0 && sCount === tCount) {
-      winnerText = "The election is currently tied!";
-    }
-
-    document.getElementById("winnerMessage").textContent = winnerText;
-    document.getElementById("lastUpdated").textContent =
-      "Last updated: " + new Date().toLocaleTimeString();
-
-    document.getElementById("connectionStatus").textContent =
-      "Connected · " + total + " vote(s) recorded";
-  } catch (error) {
-    console.error("Results error:", error);
-    document.getElementById("connectionStatus").textContent =
-      "Could not load results. Check your database connection.";
-    document.getElementById("lastUpdated").textContent =
-      "Results could not be refreshed.";
-  }
-}
-
-function openResults() {
-  showOverlay("resultsOverlay");
-  refreshResults();
-  if (resultsTimer) clearInterval(resultsTimer);
-  resultsTimer = setInterval(refreshResults, 2000);
-}
-
-/* Load results on page startup and keep the status current. */
-refreshResults();
-setInterval(refreshResults, 2000);
-
-/* Stop the extra results timer when results are closed. */
-document.getElementById("resultsOverlay").addEventListener("transitionend", () => {});
-</script>
+    // Allow Enter to submit the name in the confirmation form.
+    document.getElementById("voterName").addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        submitVote();
+      }
+    });
+  </script>
 </body>
 </html>
